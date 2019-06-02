@@ -1,0 +1,269 @@
+View the complete Blog here
+https://medium.com/rumpydas/everything-you-need-to-know-about-time-series-4a32373c4af5d
+Everything you need to know about Time Series!
+
+Hello Readers! I would love to thank you for reading my blogs. If you haven't read my previous Blog in Data Science and Machine Learning about Exploratory Data Analysis then go have a look at it- https://medium.com/rumpydas/beginners-guide-to-eda-exploratory-data-analysis-on-a-real-data-set-using-numpy-pandas-in-python-c0cb4f63d50d
+
+The most fascinating thing about Time series for me is Forecasting.
+
+So, let's get started to find hidden Dr. Strange Inside you!
+
+Time series analysis comprises methods for analyzing time series data in order to extract meaningful statistics and other characteristics of the data. Time series forecasting is the use of a model to predict future values based on previously observed values. Forecasting can be the predictability of an event or a quantity depends on several factors including:
+
+how well we understand the factors that contribute to it;
+how much data is available;
+whether the forecasts can affect the thing we are trying to forecast.
+Today we will learn about-
+
+Steps in time series forecasting, Detecting Seasonality & Trends in Time Series, Understanding Terms like Stationery Time Series, Non-Stationery Time Series, Moving average, Estimating and eliminating seasonality and trends, Plotting Rolling Statistics, Dickey-Fuller Test, lag plots, White Noise,Autocorrelation, Differencing, Decomposing time series data, ARIMA, AR Model, MA Model, Combined model, ACF and PACF
+
+Seasonality — recurring but not necessarily periodic data patterns — is a staple of time series modeling. Since capturing true seasonality greatly enhances model accuracy, I wanted to share our thoughts and experience on the detection and modeling of such data patterns.
+
+Seasonality exists in many flavors:
+
+Single (e.g. annual, like monthly sales in retail) or multiple (e.g. weekly and annual, like The Voice online votes).
+Periodic (e.g. New Year’s Day) or not periodic (e.g. Black Friday).
+Integer or non-integer periods. For example, weekly data with annual seasonality recurs every 365/ 7 = 52 weeks.
+Multiple and nested (e.g. the daily and weekly seasonalities of hourly electricity demand) or multiple and not nested (e.g. the weekly and yearly seasonalities of daily electricity demand).
+Obviously, mixed-flavor seasonality is harder to detect. Rather than spending too much time on cumbersome data analysis, we can prefer a two-step approach:
+
+Preliminary detection with simple statistical methods.
+Fine-tuning based on modeling results.
+Preliminary detection
+The mere visualization of autocorrelation and partial autocorrelation plots, combined with some understanding of the corresponding real-world phenomenon, will often yield a fair estimate of the seasonality you are dealing with.
+
+You will confirm this visual hunch with a quick round of time-series decomposition, for example with moving averages:
+
+De-trend your data with a centered moving average the size of your estimated seasonality.
+Isolate the seasonal component with one moving average per relevant time-step (e.g. one moving average per calendar day for a weekly seasonality, or one per month for an annual seasonality.
+Modeling seasonality
+Base case
+There are four main families of basic seasonal models:
+
+Exponential Smoothing (ETS) models, including Holt-Winters models (the 1960s seasonality stars).
+Seasonal ARIMA (SARIMA) models.
+Models based on Fourier series, where seasonalities are represented by linear combinations of cosine and sine terms.
+Regression models based on dummy variables. These variables are typically binary and indicate the occurrence of a specific season (e.g. a day of the week or a calendar event).
+Integer single seasonalities are captured by simple ETS models, and non-integer single seasonalities by models based on Fourier series.
+(Generalizations of) Holt-Winters models are good for nested and integer multiple seasonalities.
+Non-periodic cycles are particularly well addressed by decision trees based on dummy variables (although you may need to de-trend your date with a moving average first).
+Trend-A trend exists when there is a long-term increase or decrease in the data. It does not have to be linear. Sometimes we will refer to a trend as “changing direction” when it might go from an increasing trend to a decreasing trend. There is a trend in the antidiabetic drug sales data shown in Figure 2.2.
+
+
+The monthly housing sales (top left) show strong seasonality within each year, as well as some strong cyclic behavior with a period of about 6–10 years. There is no apparent trend in the data over this period.
+The US treasury bill contracts (top right) show results from the Chicago market for 100 consecutive trading days in 1981. Here there is no seasonality, but an obvious downward trend. Possibly, if we had a much longer series, we would see that this downward trend is actually part of a long cycle, but when viewed over only 100 days it appears to be a trend.
+The Australian quarterly electricity production (bottom left) shows a strong increasing trend, with strong seasonality. There is no evidence of any cyclic behavior here.
+The daily change in the Google closing stock price (bottom right) has no trend, seasonality or cyclic behavior. There are random fluctuations which do not appear to be very predictable, and no strong patterns that would help with developing a forecasting model.
+Stationary Time Series-A TS is said to be stationary if its statistical properties such as mean, variance remain constant over time. But why is it important? Most of the TS models work on the assumption that the TS is stationary. Intuitively, we can say that if a TS has a particular behavior over time, there is a very high probability that it will follow the same in the future.
+
+Stationarity is defined using very strict criterion ie. the following:
+
+constant mean
+constant variance
+an autocovariance that does not depend on time.
+
+AirLine Passenger Dataset: Xaxis -years, Y axis-Passengers in Thousands
+It is clearly evident that there is an overall increasing trend in the data along with some seasonal variations. However, it might not always be possible to make such visual inferences (we’ll see such cases later). So, more formally, we can check stationarity using the following:
+
+Plotting Rolling Statistics: We can plot the moving average or moving variance and see if it varies with time. By moving average/variance I mean that at any instant ‘t’, we’ll take the average/variance of the last year, i.e. last 12 months. But again this is more of a visual technique.
+Dickey-Fuller Test: This is one of the statistical tests for checking stationarity. Here the null hypothesis is that the TS is non-stationary. The test results comprise of a Test Statistic and some Critical Values for different confidence levels. If the ‘Test Statistic’ is less than the ‘Critical Value’, we can reject the null hypothesis and say that the series is stationary.
+Non-Stationery Time Series: Let us understand what is making a TS non-stationary. There are 2 major reasons behind the non-stationarity of a TS:
+1. Trend — varying mean over time. For eg, in this case, we saw that on average, the number of passengers was growing over time.
+2. Seasonality — variations at specific time-frames. eg people might have a tendency to buy cars in a particular month because of pay increment or festivals.
+
+Now the question arises that How to make a Time Series Stationary?
+
+The underlying principle is to model or estimate the trend and seasonality in the series and remove those from the series to get a stationary series. Then statistical forecasting techniques can be implemented on this series. The final step would be to convert the forecasted values into the original scale by applying trend and seasonality constraints back.
+
+Autocorrelation: Just as correlation measures the extent of a linear relationship between two variables, autocorrelation measures the linear relationship between lagged values of a time series.
+
+There are several autocorrelation coefficients, corresponding to each panel in the lag plot.
+
+White noise: Time series that show no autocorrelation is called white noise. Figure 2.17 gives an example of a white noise series.
+
+set.seed(30)
+y <- ts(rnorm(50))
+autoplot(y) + ggtitle("White noise")
+
+Figure 2.17: A white noise time series.
+
+Estimating & Eliminating Trend
+One of the first tricks to reduce trend can be transformation. For example, in this case, we can clearly see that there is a significant positive trend. So we can apply transformation which penalizes higher values more than smaller values. These can be taking a log, square root, cube root, etc. Let us take a log transform here for simplicity:
+
+ts_log = np.log(ts)
+plt.plot(ts_log)
+
+In this simpler case, it is easy to see a forward trend in the data. But it's not very intuitive in the presence of noise. So we can use some techniques to estimate or model this trend and then remove it from the series. There can be many ways of doing it and some of the most commonly used are:
+
+Aggregation — taking the average for a time period like monthly/weekly averages
+Smoothing — taking rolling averages
+Polynomial Fitting — fit a regression model
+I will discuss smoothing here and you should try other techniques as well which might work out for other problems. Smoothing refers to taking rolling estimates, i.e. considering the past few instances. There are can be various ways but I will discuss two of those here.
+
+Moving average
+In this approach, we take an average of ‘k’ consecutive values depending on the frequency of time series. Here we can take the average over the past 1 year, i.e. last 12 values. Pandas have specific functions defined for determining rolling statistics.
+
+moving_avg = pd.rolling_mean(ts_log,12)
+plt.plot(ts_log)
+plt.plot(moving_avg, color='red')Eliminating Trend and Seasonality
+
+
+The simple trend reduction techniques discussed before don’t work in all cases, particularly the ones with high seasonality. Let's discuss two ways of removing trend and seasonality:
+
+Differencing – taking the difference with a particular time lag
+Decomposition – modeling both trend and seasonality and removing them from the model.
+Differencing
+One of the most common methods of dealing with both trend and seasonality is differencing. In this technique, we take the difference of the observation at a particular instant with that at the previous instant. This mostly works well in improving stationarity. First order differencing can be done in Pandas as:
+
+ts_log_diff = ts_log - ts_log.shift()
+plt.plot(ts_log_diff)
+
+This appears to have reduced trend considerably. Let's verify using our plots:
+
+ts_log_diff.dropna(inplace=True)
+test_stationarity(ts_log_diff)test_stationarity(ts_log_diff)
+
+We can see that the mean and std variations have small variations with time. Also, the Dickey-Fuller test statistic is less than the 10% critical value, thus the TS is stationary with 90% confidence. We can also take second or third order differences which might get even better results in certain applications. I leave it to you to try them out.
+
+Decomposing
+In this approach, both trend and seasonality are modeled separately and the remaining part of the series is returned.
+
+from statsmodels.tsa.seasonal import seasonal_decompose
+decomposition = seasonal_decompose(ts_log)
+trend = decomposition.trend
+seasonal = decomposition.seasonal
+residual = decomposition.resid
+plt.subplot(411)
+plt.plot(ts_log, label='Original')
+plt.legend(loc='best')
+plt.subplot(412)
+plt.plot(trend, label='Trend')
+plt.legend(loc='best')
+plt.subplot(413)
+plt.plot(seasonal,label='Seasonality')
+plt.legend(loc='best')
+plt.subplot(414)
+plt.plot(residual, label='Residuals')
+plt.legend(loc='best')
+plt.tight_layout()
+
+Here we can see that the trend, seasonality are separated out from data and we can model the residuals. Let's check the stationarity of residuals:
+
+ts_log_decompose = residual
+ts_log_decompose.dropna(inplace=True)
+test_stationarity(ts_log_decompose)
+
+The Dickey-Fuller test statistic is significantly lower than the 1% critical value. So, this TS is very close to stationary. You can try advanced decomposition techniques as well which can generate better results. Also, you should note that converting the residuals into original values for future data is not very intuitive in this case.
+
+Forecasting a Time Series
+We saw different techniques and all of them worked reasonably well for making the TS stationary. Let's make a model on the TS after differencing as it is a very popular technique. Also, its relatively easier to add noise and seasonality back into predicted residuals in this case. Having performed the trend and seasonality estimation techniques, there can be two situations:
+
+A strictly stationary series with no dependence among the values. This is the easy case wherein we can model the residuals as white noise. But this is very rare.
+A series with significant dependence among values. In this case, we need to use some statistical models like ARIMA to forecast the data.
+Let me give you a brief introduction to ARIMA.
+
+ARIMA stands for Auto-Regressive Integrated Moving Averages. The ARIMA forecasting for a stationary time series is nothing but a linear (like linear regression) equation. The predictors depend on the parameters (p,d,q) of the ARIMA model:
+
+Number of AR (Auto-Regressive) terms (p): AR terms are just lags of the dependent variable. For instance if p is 5, the predictors for x(t) will be x(t-1)….x(t-5).
+Number of MA (Moving Average) terms (q): MA terms are lagged forecast errors in the prediction equation. For instance if q is 5, the predictors for x(t) will be e(t-1)….e(t-5) where e(i) is the difference between the moving average at the ith instant and actual value.
+Number of Differences (d): These are the number of nonseasonal differences, i.e. in this case we took the first order difference. So either we can pass that variable and put d=0 or pass the original variable and put d=1. Both will generate the same results.
+An important concern here is how to determine the value of ‘p’ and ‘q’. We use two plots to determine these numbers. Let's discuss them first.
+
+Autocorrelation Function (ACF): It is a measure of the correlation between the TS with a lagged version of itself. For instance at lag 5, ACF would compare series at time instant ‘t1’…’t2’ with series at instant ‘t1–5’…’t2–5’ (t1–5 and t2 ending points).
+Partial Autocorrelation Function (PACF): This measures the correlation between the TS with a lagged version of itself but after eliminating the variations already explained by the intervening comparisons. Eg at lag 5, it will check the correlation but remove the effects already explained by lags 1 to 4.
+The ACF and PACF plots for the TS after differencing can be plotted as:
+
+#ACF and PACF plots:
+from statsmodels.tsa.stattools import acf, pacf
+lag_acf = acf(ts_log_diff, nlags=20)
+lag_pacf = pacf(ts_log_diff, nlags=20, method='ols')
+#Plot ACF: 
+plt.subplot(121) 
+plt.plot(lag_acf)
+plt.axhline(y=0,linestyle='--',color='gray')
+plt.axhline(y=-1.96/np.sqrt(len(ts_log_diff)),linestyle='--',color='gray')
+plt.axhline(y=1.96/np.sqrt(len(ts_log_diff)),linestyle='--',color='gray')
+plt.title('Autocorrelation Function')
+#Plot PACF:
+plt.subplot(122)
+plt.plot(lag_pacf)
+plt.axhline(y=0,linestyle='--',color='gray')
+plt.axhline(y=-1.96/np.sqrt(len(ts_log_diff)),linestyle='--',color='gray')
+plt.axhline(y=1.96/np.sqrt(len(ts_log_diff)),linestyle='--',color='gray')
+plt.title('Partial Autocorrelation Function')
+plt.tight_layout()
+
+In this plot, the two dotted lines on either side of 0 are the confidence intervals. These can be used to determine the ‘p’ and ‘q’ values as:
+
+p — The lag value where the PACF chart crosses the upper confidence interval for the first time. If you notice closely, in this case, p=2.
+q — The lag value where the ACF chart crosses the upper confidence interval for the first time. If you notice closely, in this case, q=2.
+Now, let us make 3 different ARIMA models considering an individual as well as combined effects. I will also print the RSS for each. Please note that here RSS is for the values of residuals and not actual series.
+
+We need to load the ARIMA model first:
+
+from statsmodels.tsa.arima_model import ARIMA
+The p,d,q values can be specified using the order argument of ARIMA which take a tuple (p,d,q). Let model the 3 cases:
+
+AR Model
+model = ARIMA(ts_log, order=(2, 1, 0))  
+results_AR = model.fit(disp=-1)  
+plt.plot(ts_log_diff)
+plt.plot(results_AR.fittedvalues, color='red')
+plt.title('RSS: %.4f'% sum((results_AR.fittedvalues-ts_log_diff)**2))
+
+MA Model
+model = ARIMA(ts_log, order=(0, 1, 2))  
+results_MA = model.fit(disp=-1)  
+plt.plot(ts_log_diff)
+plt.plot(results_MA.fittedvalues, color='red')
+plt.title('RSS: %.4f'% sum((results_MA.fittedvalues-ts_log_diff)**2))
+
+Combined Model
+model = ARIMA(ts_log, order=(2, 1, 2))  
+results_ARIMA = model.fit(disp=-1)  
+plt.plot(ts_log_diff)
+plt.plot(results_ARIMA.fittedvalues, color='red')
+plt.title('RSS: %.4f'% sum((results_ARIMA.fittedvalues-ts_log_diff)**2))
+
+Here we can see that the AR and MA models have almost the same RSS but combined is significantly better. Now, we are left with 1 last step, i.e. taking these values back to the original scale.
+
+Taking it back to the original scale
+Since the combined model gave the best result, let us scale it back to the original values and see how well it performs there. The first step would be to store the predicted results as a separate series and observe it.
+
+predictions_ARIMA_diff = pd.Series(results_ARIMA.fittedvalues, copy=True)
+print predictions_ARIMA_diff.head()
+
+Notice that these start from ‘1949–02–01’ and not the first month. Why? This is because we took a lag by 1 and the first element doesn’t have anything before it to subtract from. The way to convert the differencing to log scale is to add these differences consecutively to the base number. An easy way to do it is to first determine the cumulative sum at index and then add it to the base number. The cumulative sum can be found as:
+
+predictions_ARIMA_diff_cumsum = predictions_ARIMA_diff.cumsum()
+print predictions_ARIMA_diff_cumsum.head()
+
+You can quickly do some back of mind calculations using the previous output to check if these are correct. Next, we’ve to add them to the base number. For this let's create a series with all values as the base number and add the differences to it. This can be done as:
+
+predictions_ARIMA_log = pd.Series(ts_log.ix[0], index=ts_log.index)
+predictions_ARIMA_log = predictions_ARIMA_log.add(predictions_ARIMA_diff_cumsum,fill_value=0)
+predictions_ARIMA_log.head()
+
+Here the first element is base number itself and from thereon the values cumulatively added. The last step is to take the exponent and compare with the original series.
+
+predictions_ARIMA = np.exp(predictions_ARIMA_log)
+plt.plot(ts)
+plt.plot(predictions_ARIMA)
+plt.title('RMSE: %.4f'% np.sqrt(sum((predictions_ARIMA-ts)**2)/len(ts)))
+
+Finally, we have a forecast on the original scale.
+
+Modeling procedure
+When fitting an ARIMA model to a set of (non-seasonal) time series data, the following procedure provides a useful general approach.
+
+Plot the data and identify any unusual observations.
+If necessary, transform the data o stabilize the variance.
+If the data are non-stationary, take first differences of the data until the data are stationary.
+Examine the ACF/PACF: Is an ARIMA(p,d,0p,d,0) or ARIMA(0,d,q0,d,q) model appropriate?
+Try your chosen model(s), and use the AICc to search for a better model.
+Check the residuals from your chosen model by plotting the ACF of the residuals, and doing a portmanteau test of the residuals. If they do not look like white noise, try a modified model.
+Once the residuals look like white noise, calculate forecasts.
+The Hyndman-Khandakar algorithm only takes care of steps 3–5. So even if you use it, you will still need to take care of the other steps yourself.
+
+The process is summarised in Figure 8.11.
+
